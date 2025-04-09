@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Visa Pro - Professional Visa Requirements Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛂</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .country-flag {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-right: 8px;
+        }
+        
+        .glow-card {
+            box-shadow: 0 4px 20px -5px rgba(14, 165, 233, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .glow-card:hover {
+            box-shadow: 0 8px 30px -5px rgba(14, 165, 233, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .chat-bubble {
+            position: relative;
+            border-radius: 18px;
+        }
+        
+        .chat-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+        
+        .user-bubble:after {
+            right: -10px;
+            border-left-color: #0ea5e9;
+            border-right: 0;
+            border-bottom: 0;
+            margin-bottom: 10px;
+        }
+        
+        .assistant-bubble:after {
+            left: -10px;
+            border-right-color: #e0f2fe;
+            border-left: 0;
+            border-bottom: 0;
+            margin-bottom: 10px;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(224, 242, 254, 0.5);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.5);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(2, 132, 199, 0.7);
+        }
+        /* Security enhancements */
+        .secure-badge {
+            position: relative;
+            padding-left: 24px;
+        }
+        .secure-badge:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11V11.99z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        /* Print styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #chat-container, #chat-container * {
+                visibility: visible;
+            }
+            #chat-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                overflow: visible;
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-primary-50 to-primary-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <div class="bg-white rounded-lg p-3 mb-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="secure-badge text-sm text-primary-700 font-medium">Secure Connection</span>
+                <span class="ml-4 text-xs text-primary-500">
+                    <i class="fas fa-lock mr-1"></i> All data is processed securely
+                </span>
+            </div>
+            <button onclick="window.print()" class="text-primary-500 hover:text-primary-700">
+                <i class="fas fa-print"></i>
+            </button>
+        </div>
+        <!-- Header with animated gradient -->
+        <header class="text-center mb-12 relative overflow-hidden rounded-2xl bg-white glow-card p-8">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary-400 to-secondary-500 opacity-10"></div>
+            <div class="relative z-10">
+                <div class="flex justify-center items-center mb-4">
+                    <div class="bg-gradient-to-r from-primary-600 to-secondary-600 p-3 rounded-full shadow-lg mr-4">
+                        <i class="fas fa-passport text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                        Global Visa Pro
+                    </h1>
+                </div>
+                <p class="text-lg text-primary-700 mb-2">Your professional guide to worldwide visa requirements</p>
+                <p class="text-sm text-primary-500">Powered by the latest immigration regulations from 190+ countries</p>
+                
+                <div class="mt-6 flex justify-center space-x-4">
+                    <div class="flex items-center bg-primary-50 px-3 py-1 rounded-full text-xs font-medium text-primary-700">
+                        <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                        Real-time Data
+                    </div>
+                    <div class="flex items-center bg-primary-50 px-3 py-1 rounded-full text-xs font-medium text-primary-700">
+                        <i class="fas fa-shield-alt text-xs mr-2 text-primary-600"></i>
+                        Verified Sources
+                    </div>
+                    <div class="flex items-center bg-primary-50 px-3 py-1 rounded-full text-xs font-medium text-primary-700">
+                        <i class="fas fa-globe text-xs mr-2 text-primary-600"></i>
+                        190+ Countries
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main chat container -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8 glow-card">
+            <!-- Chat header with status bar -->
+            <div class="bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-4 flex items-center">
+                <div class="flex items-center">
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mr-3">
+                            <i class="fas fa-robot text-primary-600"></i>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-green-400 border-2 border-white"></div>
+                    </div>
+                    <h2 class="text-lg font-semibold">Visa Requirements Assistant</h2>
+                </div>
+            </div>
+            
+            <!-- Chat messages area -->
+            <div id="chat-container" class="h-[32rem] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-primary-50 to-white custom-scrollbar">
+                <!-- Welcome message -->
+                <div class="flex justify-start">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm max-w-[85%] chat-bubble assistant-bubble">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-primary-100 p-2 rounded-full mr-3">
+                                <i class="fas fa-globe-americas text-primary-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-primary-800">Global Visa Pro Assistant</h3>
+                                <p class="text-xs text-primary-500">Always up-to-date</p>
+                            </div>
+                        </div>
+                        <div class="text-primary-700">
+                            <p>Welcome to your professional visa requirements assistant! I can provide detailed information about:</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li><strong>Visa requirements</strong> between any countries</li>
+                                <li><strong>Document checklists</strong> for applications</li>
+                                <li><strong>Processing times</strong> and associated costs</li>
+                                <li><strong>Visa-free</strong> travel information</li>
+                                <li><strong>Special conditions</strong> for different passport types</li>
+                            </ul>
+                            <div class="mt-4 bg-primary-50 border-l-4 border-primary-400 p-3 rounded-r">
+                                <p class="text-sm font-medium text-primary-800"><i class="fas fa-lightbulb mr-2 text-primary-600"></i> Try asking:</p>
+                                <p class="text-sm mt-1 italic text-primary-600">"What documents do I need for a UK work visa as an Indian citizen?"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat input area -->
+            <div class="p-4 bg-white border-t border-primary-100">
+                <div class="flex gap-3">
+                    <div class="relative flex-1">
+                        <input type="text" id="user-input" 
+                            class="w-full p-4 pr-12 border-2 border-primary-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-all"
+                            placeholder="Ask about visa requirements (e.g. 'Visa needed from India to Germany?')"
+                            onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <button onclick="clearChat()" class="absolute right-14 top-1/2 transform -translate-y-1/2 text-primary-400 hover:text-primary-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button onclick="voiceInput()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary-400 hover:text-primary-600">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                    <button onclick="sendMessage()" 
+                        class="bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-secondary-600 transition-all shadow-md hover:shadow-lg flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick action cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Popular routes card -->
+            <div class="bg-white p-6 rounded-2xl shadow-md glow-card">
+                <div class="flex items-center mb-4">
+                    <div class="bg-primary-100 p-2 rounded-lg mr-3">
+                        <i class="fas fa-route text-primary-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary-800">Popular Visa Routes</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="quickStart('Visa requirements for US citizens visiting Japan for tourism')" class="quick-btn">
+                        <img src="https://flagcdn.com/w20/us.png" class="country-flag">
+                        <img src="https://flagcdn.com/w20/jp.png" class="country-flag">
+                        US → Japan
+                    </button>
+                    <button onclick="quickStart('Visa requirements for Indian citizens visiting United Kingdom for business')" class="quick-btn">
+                        <img src="https://flagcdn.com/w20/in.png" class="country-flag">
+                        <img src="https://flagcdn.com/w20/gb.png" class="country-flag">
+                        India → UK
+                    </button>
+                    <button onclick="quickStart('Visa requirements for Chinese citizens visiting Schengen area')" class="quick-btn">
+                        <img src="https://flagcdn.com/w20/cn.png" class="country-flag">
+                        <img src="https://flagcdn.com/w20/eu.png" class="country-flag">
+                        China → Schengen
+                    </button>
+                    <button onclick="quickStart('Visa requirements for Brazilian citizens visiting USA for tourism')" class="quick-btn">
+                        <img src="https://flagcdn.com/w20/br.png" class="country-flag">
+                        <img src="https://flagcdn.com/w20/us.png" class="country-flag">
+                        Brazil → US
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Visa types card -->
+            <div class="bg-white p-6 rounded-2xl shadow-md glow-card">
+                <div class="flex items-center mb-4">
+                    <div class="bg-primary-100 p-2 rounded-lg mr-3">
+                        <i class="fas fa-file-alt text-primary-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary-800">Visa Types Explorer</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="quickStart('Requirements for Schengen tourist visa including documents and processing time')" class="quick-btn">
+                        <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+                            <i class="fas fa-umbrella-beach text-blue-600 text-xs"></i>
+                        </div>
+                        Tourist Visa
+                    </button>
+                    <button onclick="quickStart('Work visa requirements in Canada including necessary documents and processing fees')" class="quick-btn">
+                        <div class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center mr-2">
+                            <i class="fas fa-briefcase text-purple-600 text-xs"></i>
+                        </div>
+                        Work Visa
+                    </button>
+                    <button onclick="quickStart('Student visa requirements for Australia including financial requirements')" class="quick-btn">
+                        <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                            <i class="fas fa-graduation-cap text-green-600 text-xs"></i>
+                        </div>
+                        Student Visa
+                    </button>
+                    <button onclick="quickStart('Transit visa requirements in Dubai including duration and application process')" class="quick-btn">
+                        <div class="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center mr-2">
+                            <i class="fas fa-plane text-yellow-600 text-xs"></i>
+                        </div>
+                        Transit Visa
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent updates card -->
+        <div class="bg-white p-6 rounded-2xl shadow-md glow-card mb-8">
+            <div class="flex items-center mb-4">
+                <div class="bg-primary-100 p-2 rounded-lg mr-3">
+                    <i class="fas fa-sync-alt text-primary-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-primary-800">Recent Visa Policy Updates</h3>
+            </div>
+            <div class="space-y-3">
+                <button onclick="quickStart('What are the latest changes to US visa policies?')" class="update-btn">
+                    <div class="pulse bg-blue-500 w-2 h-2 rounded-full mr-3"></div>
+                    <span>US Visa Policy Updates</span>
+                    <i class="fas fa-chevron-right ml-auto text-primary-400"></i>
+                </button>
+                <button onclick="quickStart('What are the new Schengen visa rules for 2023?')" class="update-btn">
+                    <div class="pulse bg-green-500 w-2 h-2 rounded-full mr-3"></div>
+                    <span>Schengen Area Changes</span>
+                    <i class="fas fa-chevron-right ml-auto text-primary-400"></i>
+                </button>
+                <button onclick="quickStart('What are the new digital nomad visa options available?')" class="update-btn">
+                    <div class="pulse bg-purple-500 w-2 h-2 rounded-full mr-3"></div>
+                    <span>Digital Nomad Visas</span>
+                    <i class="fas fa-chevron-right ml-auto text-primary-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer with disclaimer -->
+        <footer class="text-center text-sm text-primary-600 bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-primary-100">
+            <div class="max-w-2xl mx-auto">
+                <p class="mb-2">
+                    <i class="fas fa-info-circle mr-1"></i> 
+                    This service provides guidance only. Always verify requirements with official government sources before travel.
+                </p>
+                <div class="flex flex-wrap justify-center items-center gap-4 mt-3">
+                    <span class="text-xs flex items-center">
+                        <i class="fas fa-lock mr-1"></i> No personal data stored
+                    </span>
+                    <span class="text-xs flex items-center">
+                        <i class="fas fa-shield-alt mr-1"></i> Encrypted connections
+                    </span>
+                    <span class="text-xs flex items-center">
+                        <i class="fas fa-user-secret mr-1"></i> Privacy-focused
+                    </span>
+                </div>
+                <p class="mt-3 text-xs text-primary-400">
+                    © 2023 Global Visa Pro. All rights reserved. 
+                    <span class="ml-2">v2.1.1</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+        const API_KEY = 'AIzaSyCOsMm6RsQbP6AgpW7aBvV7SEVXRAAqfZs'; 
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+
+        // System prompt to guide the AI responses
+        const SYSTEM_PROMPT = `You are Global Visa Pro, a professional visa requirements specialist. 
+        Provide accurate, up-to-date information about visa requirements between countries. 
+        Structure your responses with these sections when applicable:
+        
+        **Visa Requirements**: 
+        - Clearly state if visa is required, visa-free, eVisa, or visa on arrival
+        - Maximum allowed stay duration
+        - Any special conditions
+        
+        **Required Documents**:
+        - List all required documents clearly
+        - Note any special requirements (translation, notarization)
+        
+        **Processing**:
+        - Estimated processing time
+        - Application method (embassy, online, etc.)
+        - Cost in USD and local currency
+        
+        **Additional Information**:
+        - Embassy/consulate locations
+        - Useful official links
+        - Recent policy changes
+        
+        Be professional, concise and accurate. If unsure, advise checking with the embassy. 
+        Format with clear headings and bullet points. Include disclaimer about verifying with official sources.`;
+
+        async function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            addMessageToChat(userMessage, 'user');
+            userInput.value = '';
+            
+            // Show typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'flex justify-start';
+            typingIndicator.innerHTML = `
+                <div class="bg-white p-4 rounded-2xl shadow-sm max-w-[85%] chat-bubble assistant-bubble">
+                    <div class="flex items-center">
+                        <div class="bg-primary-100 p-2 rounded-full mr-3 animate-pulse">
+                            <i class="fas fa-ellipsis-h text-primary-600"></i>
+                        </div>
+                        <span class="text-primary-600 font-medium">Researching visa requirements...</span>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(typingIndicator);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `${SYSTEM_PROMPT}\n\nUser question: ${userMessage}`
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                console.log("API Response:", data);
+
+                // Remove typing indicator
+                chatContainer.removeChild(typingIndicator);
+
+                const assistantMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                    "⚠️ I couldn't retrieve visa information at this time. Please check the official government website or try again later.";
+                
+                // Format the response with proper sections and styling
+                const formattedResponse = formatVisaResponse(assistantMessage);
+                addMessageToChat(formattedResponse, 'assistant');
+            } catch (error) {
+                console.error('Error:', error);
+                // Remove typing indicator
+                chatContainer.removeChild(typingIndicator);
+                addMessageToChat(`
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r mb-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                            <strong class="text-red-700">Connection Error</strong>
+                        </div>
+                        <p class="text-red-600 mt-1">We couldn't connect to the visa database. Please try again later or visit the official government website for the most accurate information.</p>
+                    </div>
+                `, 'error');
+            }
+        }
+
+        function formatVisaResponse(text) {
+            // Format sections with headers
+            let formatted = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
+                .replace(/\n/g, '<br>') // Line breaks
+                .replace(/Visa Requirements:/gi, '<div class="section-title"><i class="fas fa-passport mr-2"></i>Visa Requirements</div>')
+                .replace(/Required Documents:/gi, '<div class="section-title"><i class="fas fa-file-alt mr-2"></i>Required Documents</div>')
+                .replace(/Processing:/gi, '<div class="section-title"><i class="fas fa-clock mr-2"></i>Processing</div>')
+                .replace(/Additional Information:/gi, '<div class="section-title"><i class="fas fa-info-circle mr-2"></i>Additional Information</div>');
+            
+            // Format lists
+            formatted = formatted.replace(/- (.*?)(<br>|$)/g, '<li class="ml-5 pl-2">$1</li>');
+            formatted = formatted.replace(/<li/g, '<ul class="list-disc pl-5 space-y-2 my-2"><li');
+            formatted = formatted.replace(/<\/li>/g, '</li></ul>');
+            
+            // Add disclaimer
+            formatted += `
+                <div class="mt-6 bg-primary-50/50 border border-primary-200 rounded-xl p-4">
+                    <div class="flex items-start">
+                        <div class="bg-primary-100 p-2 rounded-lg mr-3 flex-shrink-0">
+                            <i class="fas fa-shield-alt text-primary-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-primary-800 mb-1">Important Disclaimer</h4>
+                            <p class="text-sm text-primary-600">
+                                Visa requirements change frequently. For the most current and official information, 
+                                always check with the embassy or consulate website of your destination country. 
+                                <a href="#" class="text-primary-700 underline">Find official embassy websites here</a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return formatted;
+        }
+
+        async function quickStart(query) {
+            userInput.value = query;
+            await sendMessage();
+        }
+
+        function addMessageToChat(message, role) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex justify-${role === 'user' ? 'end' : 'start'} mb-4`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = `p-5 rounded-2xl max-w-[85%] shadow-sm chat-bubble ${
+                role === 'user' ? 'bg-primary-600 text-white user-bubble' : 
+                role === 'error' ? 'bg-red-50 text-red-800' : 'bg-white text-primary-700 assistant-bubble'
+            }`;
+            
+            if (role === 'user') {
+                contentDiv.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="bg-primary-700 p-2 rounded-full mr-3">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">You</h3>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        ${message}
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="bg-primary-100 p-2 rounded-full mr-3">
+                            <i class="fas fa-passport text-primary-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-primary-800">Visa Assistant</h3>
+                            <p class="text-xs text-primary-500">Professional guidance</p>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        ${role === 'error' ? message : formatVisaResponse(message)}
+                    </div>
+                `;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function clearChat() {
+            chatContainer.innerHTML = `
+                <div class="flex justify-start">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm max-w-[85%] chat-bubble assistant-bubble">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-primary-100 p-2 rounded-full mr-3">
+                                <i class="fas fa-globe-americas text-primary-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-primary-800">Global Visa Pro Assistant</h3>
+                                <p class="text-xs text-primary-500">Always up-to-date</p>
+                            </div>
+                        </div>
+                        <div class="text-primary-700">
+                            <p>Welcome back! What visa information can I help you with today?</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function voiceInput() {
+            alert("Voice input would be implemented here in a production app");
+            // In a real implementation, this would use the Web Speech API
+        }
+    </script>
+
+    <style>
+        .quick-btn {
+            background-color: white;
+            color: #0c4a6e;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            border: 1px solid #e0f2fe;
+            text-align: left;
+        }
+        .quick-btn:hover {
+            background-color: #e0f2fe;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.1);
+        }
+        
+        .update-btn {
+            background-color: white;
+            color: #0c4a6e;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            border: 1px solid #e0f2fe;
+            width: 100%;
+        }
+        .update-btn:hover {
+            background-color: #f0f9ff;
+            transform: translateX(2px);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: #075985;
+            margin: 1rem 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .message-content ul {
+            margin: 0.5rem 0;
+        }
+        
+        .message-content li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</body>
+</html>
